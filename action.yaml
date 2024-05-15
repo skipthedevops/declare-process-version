@@ -1,0 +1,19 @@
+name: 'Declare process version'
+description: 'Notifies the Skip the DevOps platform that a new version of an existing process exists and kicks off an automated deployment if requested.'
+author: 'Skip the DevOps'
+
+inputs:
+  process-id:
+    description: 'The id of an existing process'
+    required: true
+  tag:
+    description: 'The tag of the docker image represented by this version'
+    required: true
+  auto-deploy:
+    description: 'If you have an environment flagged as an auto deploy environment (aka a Dev environment), setting this to true will automatically deploy the new version to that environment.'
+    required: false
+    default: true
+
+runs:
+  using: node20
+  main: dist/index.js
