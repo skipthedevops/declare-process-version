@@ -1,2 +1,1 @@
-# declare-process-version
-A github action which allows users to easily push new versions of their code into the Skip The DevOps platform.
+A github action for sending new versions of code to the SkipTheDevOps platform.
