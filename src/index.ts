@@ -33,7 +33,10 @@ async function post(path: string, body: any): Promise<void> {
             hostname: apiHost,
             port: 443,
             path: path,
-            method: "POST"
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
         }
 
         let request = https.request(options, res => {

@@ -56,7 +56,10 @@ async function post(path, body) {
             hostname: apiHost,
             port: 443,
             path: path,
-            method: "POST"
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
         };
         let request = https_1.default.request(options, res => {
             const statusCode = res.statusCode ?? 0;
