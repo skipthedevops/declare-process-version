@@ -6,12 +6,12 @@ const apiHost = "api.alpha.skipthedevops.com"
 
 async function main() {
     try {
-        const processId = core.getInput('process-id', {required: true})
-        const tag = core.getInput('tag', {required: true})
-        const autoDeploy = core.getInput('auto-deploy') ?? false
-        const integrationToken = core.getInput('integration-token', {required: true})
+        const processId = core.getInput('process-id')
+        const tag = core.getInput('tag')
+        const autoDeploy = core.getInput('auto-deploy')
+        const integrationToken = core.getInput('integration-token')
 
-        console.log(`Logging in with supplied integration token`);
+        console.log(`Logging in with supplied integration token`)
         await post("/v1/account/login", {
             integrationToken: integrationToken
         })

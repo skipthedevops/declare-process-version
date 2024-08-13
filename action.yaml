@@ -10,9 +10,12 @@ inputs:
     description: 'The tag of the docker image represented by this version'
     required: true
   auto-deploy:
-    description: 'If you have an environment flagged as an auto deploy environment (aka a Dev environment), setting this to true will automatically deploy the new version to that environment.'
+    description: 'If you have an environment flagged as an auto target for the given process (aka a Dev environment), setting this to true will automatically deploy the new version to that environment.'
     required: false
-    default: true
+    default: false
+  integration-token:
+    description: 'The integration token to log into the Skip the DevOps api with'
+    required: true
 
 runs:
   using: node20
