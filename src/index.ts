@@ -1,20 +1,68 @@
+import https from "https"
+
 import * as core from "@actions/core"
-import * as github from "@actions/github"
 
-try {
-    // `who-to-greet` input defined in action metadata file
-    const processId = core.getInput('process-id')
-    const tag = core.getInput('tag')
-    const autoDeploy = core.getInput('auto-deploy')
+const apiHost = "api.alpha.skipthedevops.com"
 
-    console.log(`${processId}, ${tag}, ${autoDeploy}`);
+async function main() {
+    try {
+        const processId = core.getInput('process-id', {required: true})
+        const tag = core.getInput('tag', {required: true})
+        const autoDeploy = core.getInput('auto-deploy') ?? false
+        const integrationToken = core.getInput('integration-token', {required: true})
 
-    const time = (new Date()).toTimeString();
-    core.setOutput("time", time);
+        console.log(`Logging in with supplied integration token`);
+        await post("/v1/account/login", {
+            integrationToken: integrationToken
+        })
 
-    // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = JSON.stringify(github.context.payload, undefined, 2)
-    console.log(`The event payload: ${payload}`);
-} catch (error: any) {
-    core.setFailed(error.message);
+        console.log(`Submitting new process version, processId=${processId}, tag=${tag}, autoDeploy=${autoDeploy}`)
+        await post("/v1/process/version", {
+            processId: processId,
+            dockerImageTag: tag,
+            autoDeploy: autoDeploy
+        })
+    } catch (error: any) {
+        core.setFailed(error.message);
+    }
 }
+
+async function post(path: string, body: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+        let options = {
+            hostname: apiHost,
+            port: 443,
+            path: path,
+            method: "POST"
+        }
+
+        let request = https.request(options, res => {
+            const statusCode = res.statusCode ?? 0
+            if (statusCode < 200 || statusCode >= 300) {
+                reject(`ERROR Recieved status code ${res.statusCode} when calling get ${path}`)
+            }
+
+            let dataString = ""
+            res.on("data", d => {
+                dataString += d.toString("utf8")
+            })
+            res.on("close", () => {
+                if (statusCode >= 200 && statusCode < 300) {
+                    resolve(JSON.parse(dataString))
+                } else {
+                    console.error(dataString)
+                }
+            })
+        })    
+
+        request.on("error", (error: any) => {
+            console.log(`Error. ${error}`)
+            reject(null)
+        })
+
+        request.write(JSON.stringify(body))
+        request.end()
+    })
+}
+
+main()
