@@ -72,7 +72,7 @@ async function post(path, body) {
             });
             res.on("close", () => {
                 if (statusCode >= 200 && statusCode < 300) {
-                    resolve(JSON.parse(dataString));
+                    resolve();
                 }
                 else {
                     console.error(dataString);

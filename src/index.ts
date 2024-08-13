@@ -51,7 +51,7 @@ async function post(path: string, body: any): Promise<void> {
             })
             res.on("close", () => {
                 if (statusCode >= 200 && statusCode < 300) {
-                    resolve(JSON.parse(dataString))
+                    resolve()
                 } else {
                     console.error(dataString)
                 }
