@@ -35,7 +35,7 @@ async function post(path: string, body: any): Promise<void> {
             "Content-Type": "application/json"
         }
         if (authToken != null) {
-            headers["Cookie"] = `${authCookieName}=${authToken}`
+            headers["cookie"] = `${authCookieName}=${authToken}`
         }
         let options = {
             hostname: apiHost,
@@ -57,8 +57,8 @@ async function post(path: string, body: any): Promise<void> {
             })
             res.on("close", () => {
                 if (statusCode >= 200 && statusCode < 300) {
-                    const setCookieHeader = res.headers["set-cookie"]
-                    for (let cookie in setCookieHeader) {
+                    const setCookieHeader = res.headers["set-cookie"] ?? []
+                    for (let cookie of setCookieHeader) {
                         const cookieTokens = cookie.split("=")
                         if (cookieTokens.length >= 2 && cookieTokens[0] == authCookieName) {
                             const valueTokens = cookieTokens[1].split(';')
