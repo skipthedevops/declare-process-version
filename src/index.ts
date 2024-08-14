@@ -22,7 +22,7 @@ async function main() {
         await post("/v1/process/version", {
             processId: processId,
             dockerImageTag: tag,
-            autoDeploy: autoDeploy
+            autoDeploy: autoDeploy.toLowerCase() == "true"
         })
     } catch (error: any) {
         core.setFailed(error.message);
