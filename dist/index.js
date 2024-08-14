@@ -29,6 +29,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const https_1 = __importDefault(require("https"));
 const core = __importStar(require("@actions/core"));
 const apiHost = "api.alpha.skipthedevops.com";
+const authCookieName = "X-SKIPTHEDEVOPS-AUTHORIZATION";
+let authToken = null;
 async function main() {
     try {
         const processId = core.getInput('process-id');
@@ -52,14 +54,18 @@ async function main() {
 }
 async function post(path, body) {
     return new Promise((resolve, reject) => {
+        const headers = {
+            "Content-Type": "application/json"
+        };
+        if (authToken != null) {
+            headers[authCookieName] = authToken;
+        }
         let options = {
             hostname: apiHost,
             port: 443,
             path: path,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            }
+            headers: headers,
         };
         let request = https_1.default.request(options, res => {
             const statusCode = res.statusCode ?? 0;
@@ -72,6 +78,16 @@ async function post(path, body) {
             });
             res.on("close", () => {
                 if (statusCode >= 200 && statusCode < 300) {
+                    const setCookieHeader = res.headers["set-cookie"];
+                    for (let cookie in setCookieHeader) {
+                        const cookieTokens = cookie.split("=");
+                        if (cookieTokens.length >= 2 && cookieTokens[0] == authCookieName) {
+                            const valueTokens = cookieTokens[1].split(';');
+                            if (valueTokens.length >= 1) {
+                                authToken = valueTokens[0];
+                            }
+                        }
+                    }
                     resolve();
                 }
                 else {

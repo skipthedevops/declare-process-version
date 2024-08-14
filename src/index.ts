@@ -3,6 +3,8 @@ import https from "https"
 import * as core from "@actions/core"
 
 const apiHost = "api.alpha.skipthedevops.com"
+const authCookieName = "X-SKIPTHEDEVOPS-AUTHORIZATION"
+let authToken: string | null = null
 
 async function main() {
     try {
@@ -29,14 +31,18 @@ async function main() {
 
 async function post(path: string, body: any): Promise<void> {
     return new Promise((resolve, reject) => {
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json"
+        }
+        if (authToken != null) {
+            headers[authCookieName] = authToken
+        }
         let options = {
             hostname: apiHost,
             port: 443,
             path: path,
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            }
+            headers: headers,
         }
 
         let request = https.request(options, res => {
@@ -51,12 +57,22 @@ async function post(path: string, body: any): Promise<void> {
             })
             res.on("close", () => {
                 if (statusCode >= 200 && statusCode < 300) {
+                    const setCookieHeader = res.headers["set-cookie"]
+                    for (let cookie in setCookieHeader) {
+                        const cookieTokens = cookie.split("=")
+                        if (cookieTokens.length >= 2 && cookieTokens[0] == authCookieName) {
+                            const valueTokens = cookieTokens[1].split(';')
+                            if (valueTokens.length >= 1) {
+                                authToken = valueTokens[0]
+                            }
+                        }
+                    }
                     resolve()
                 } else {
                     console.error(dataString)
                 }
             })
-        })    
+        })
 
         request.on("error", (error: any) => {
             console.log(`Error. ${error}`)
