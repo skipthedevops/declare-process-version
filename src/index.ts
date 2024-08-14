@@ -35,7 +35,7 @@ async function post(path: string, body: any): Promise<void> {
             "Content-Type": "application/json"
         }
         if (authToken != null) {
-            headers[authCookieName] = authToken
+            headers["Cookie"] = `${authCookieName}=${authToken}`
         }
         let options = {
             hostname: apiHost,
