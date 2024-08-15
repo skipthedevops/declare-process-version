@@ -37,15 +37,18 @@ async function main() {
         const tag = core.getInput('tag');
         const autoDeploy = core.getInput('auto-deploy');
         const integrationToken = core.getInput('integration-token');
+        let versionName = core.getInput('name');
+        versionName = versionName.length == 0 ? null : versionName;
         console.log(`Logging in with supplied integration token`);
         await post("/v1/account/login", {
             integrationToken: integrationToken
         });
-        console.log(`Submitting new process version, processId=${processId}, tag=${tag}, autoDeploy=${autoDeploy}`);
+        console.log(`Submitting new process version, processId=${processId}, tag=${tag}, autoDeploy=${autoDeploy}, versionName=${versionName}`);
         await post("/v1/process/version", {
             processId: processId,
             dockerImageTag: tag,
-            autoDeploy: autoDeploy.toLowerCase() == "true"
+            autoDeploy: autoDeploy.toLowerCase() == "true",
+            versionName: versionName
         });
     }
     catch (error) {
