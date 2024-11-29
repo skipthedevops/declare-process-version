@@ -3,8 +3,8 @@ description: 'Notifies the Skip the DevOps platform that a new version of an exi
 author: 'Skip the DevOps'
 
 inputs:
-  process-id:
-    description: 'The id of an existing process'
+  application-integration-id:
+    description: 'The id of an existing application'
     required: true
   tag:
     description: 'The tag of the docker image represented by this version'

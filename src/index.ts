@@ -8,7 +8,7 @@ let authToken: string | null = null
 
 async function main() {
     try {
-        const processId = core.getInput('process-id')
+        const processId = core.getInput('application-integration-id')
         const tag = core.getInput('tag')
         const autoDeploy = core.getInput('auto-deploy')
         const integrationToken = core.getInput('integration-token')
@@ -87,4 +87,4 @@ async function post(path: string, body: any): Promise<void> {
     })
 }
 
-main()
+void main()
