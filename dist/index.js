@@ -43,7 +43,7 @@ const authCookieName = "X-SKIPTHEDEVOPS-AUTHORIZATION";
 let authToken = null;
 async function main() {
     try {
-        const processId = core.getInput('application-integration-id');
+        const integrationId = core.getInput('application-integration-id');
         const tag = core.getInput('tag');
         const autoDeploy = core.getInput('auto-deploy');
         const integrationToken = core.getInput('integration-token');
@@ -53,9 +53,9 @@ async function main() {
         await post("/v1/account/login", {
             integrationToken: integrationToken
         });
-        console.log(`Submitting new process version, processId=${processId}, tag=${tag}, autoDeploy=${autoDeploy}, versionName=${versionName}`);
+        console.log(`Submitting new process version, integrationId=${integrationId}, tag=${tag}, autoDeploy=${autoDeploy}, versionName=${versionName}`);
         await post("/v1/process/version", {
-            processId: processId,
+            integrationId: integrationId,
             dockerImageTag: tag,
             autoDeploy: autoDeploy.toLowerCase() == "true",
             versionName: versionName
