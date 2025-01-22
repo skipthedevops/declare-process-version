@@ -28,7 +28,7 @@ async function main() {
             versionName: versionName
         })
     } catch (error: any) {
-        core.setFailed(error.message);
+        core.setFailed(error?.message ?? error);
     }
 }
 
@@ -52,8 +52,9 @@ async function post(path: string, body: any): Promise<void> {
         let request = https.request(options, res => {
             const statusCode = res.statusCode ?? 0
             if (statusCode < 200 || statusCode >= 300) {
-                console.log(`ERROR Recieved status code ${res.statusCode} when calling ${apiHost}${path}`)
-                reject(null)
+                const message = `ERROR Recieved status code ${res.statusCode} when calling ${apiHost}${path}`
+                console.log(message)
+                reject(message)
             }
 
             let dataString = ""
@@ -74,15 +75,17 @@ async function post(path: string, body: any): Promise<void> {
                     }
                     resolve()
                 } else {
-                    // GitHub will actively obfuscate any logged secrets in the body.
-                    console.error(`Received status code ${statusCode}.  Data: ${dataString}.  Body: ${bodyString}`)
+                    const message = `Received status code ${statusCode}.  Response: ${dataString}.`
+                    console.log(message)
+                    reject(message)
                 }
             })
         })
 
         request.on("error", (error: any) => {
-            console.log(`Error calling ${apiHost}${path}. ${error}`)
-            reject(null)
+            const message = `Error calling ${apiHost}${path}. ${error}`
+            console.log(message)
+            reject(message)
         })
 
         request.write(bodyString)

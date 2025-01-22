@@ -62,7 +62,7 @@ async function main() {
         });
     }
     catch (error) {
-        core.setFailed(error.message);
+        core.setFailed(error?.message ?? error);
     }
 }
 async function post(path, body) {
@@ -84,8 +84,9 @@ async function post(path, body) {
         let request = https_1.default.request(options, res => {
             const statusCode = res.statusCode ?? 0;
             if (statusCode < 200 || statusCode >= 300) {
-                console.log(`ERROR Recieved status code ${res.statusCode} when calling ${apiHost}${path}`);
-                reject(null);
+                const message = `ERROR Recieved status code ${res.statusCode} when calling ${apiHost}${path}`;
+                console.log(message);
+                reject(message);
             }
             let dataString = "";
             res.on("data", d => {
@@ -106,14 +107,16 @@ async function post(path, body) {
                     resolve();
                 }
                 else {
-                    // GitHub will actively obfuscate any logged secrets in the body.
-                    console.error(`Received status code ${statusCode}.  Data: ${dataString}.  Body: ${bodyString}`);
+                    const message = `Received status code ${statusCode}.  Response: ${dataString}.`;
+                    console.log(message);
+                    reject(message);
                 }
             });
         });
         request.on("error", (error) => {
-            console.log(`Error calling ${apiHost}${path}. ${error}`);
-            reject(null);
+            const message = `Error calling ${apiHost}${path}. ${error}`;
+            console.log(message);
+            reject(message);
         });
         request.write(bodyString);
         request.end();
