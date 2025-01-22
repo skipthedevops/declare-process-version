@@ -80,10 +80,12 @@ async function post(path, body) {
             method: "POST",
             headers: headers,
         };
+        const bodyString = JSON.stringify(body);
         let request = https_1.default.request(options, res => {
             const statusCode = res.statusCode ?? 0;
             if (statusCode < 200 || statusCode >= 300) {
-                reject(`ERROR Recieved status code ${res.statusCode} when calling get ${path}`);
+                console.log(`ERROR Recieved status code ${res.statusCode} when calling ${apiHost}${path}`);
+                reject(null);
             }
             let dataString = "";
             res.on("data", d => {
@@ -104,15 +106,16 @@ async function post(path, body) {
                     resolve();
                 }
                 else {
-                    console.error(dataString);
+                    // GitHub will actively obfuscate any logged secrets in the body.
+                    console.error(`Received status code ${statusCode}.  Data: ${dataString}.  Body: ${bodyString}`);
                 }
             });
         });
         request.on("error", (error) => {
-            console.log(`Error. ${error}`);
+            console.log(`Error calling ${apiHost}${path}. ${error}`);
             reject(null);
         });
-        request.write(JSON.stringify(body));
+        request.write(bodyString);
         request.end();
     });
 }
