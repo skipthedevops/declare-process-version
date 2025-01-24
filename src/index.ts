@@ -20,7 +20,7 @@ async function main() {
             integrationToken: integrationToken
         })
 
-        console.log(`Submitting new process version, integrationId=${integrationId}, tag=${tag}, autoDeploy=${autoDeploy}, versionName=${versionName}`)
+        console.log(`Submitting new application version, integrationId=${integrationId}, tag=${tag}, autoDeploy=${autoDeploy}, versionName=${versionName}`)
         await post("/v1/process/version", {
             integrationId: integrationId,
             dockerImageTag: tag,
