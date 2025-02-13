@@ -2,7 +2,7 @@ import https from "https"
 
 import * as core from "@actions/core"
 
-const apiHost = "api.alpha.skipthedevops.com"
+const apiHost = "api.skipthedevops.com"
 const authCookieName = "X-SKIPTHEDEVOPS-AUTHORIZATION"
 let authToken: string | null = null
 
